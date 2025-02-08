@@ -8,7 +8,7 @@ import * as path from 'path';
 
 const newFp = './parking-spots-new.json';
 const oldFp = './parking-spots.json'
-const TOKEN = '7715f54c1d192915e162eaf64d5c122a';
+const TOKEN = '<MAILTRAPTOKEN>';
 
 const client = new MailtrapClient({
   token: TOKEN
