@@ -8,7 +8,7 @@ import * as path from 'path';
 
 const newFp = './parking-spots-new.json';
 const oldFp = './parking-spots.json'
-const TOKEN = '<MAILTRAP_TOKEN>';
+const TOKEN = '7715f54c1d192915e162eaf64d5c122a';
 
 const client = new MailtrapClient({
   token: TOKEN
@@ -56,12 +56,11 @@ export class AppService {
 
   checkForNewParkingSpots(): void {
     console.log("checking for new parking")
-    const newContent = this.readNewParkingSpots()
-    const oldContent = this.readOldParkingSpots()
-    const difference = diff(JSON.parse(oldContent), JSON.parse(newContent));
-    console.log(difference);
-    const newSpots = [];
-    const removedSpots = [];
+    const newContent = this.readParkingSpots(newFp)
+    const oldContent = this.readParkingSpots(oldFp)
+    const difference = this.calculateDiff(oldContent, newContent)
+    let newSpots = [];
+    let removedSpots = [];
     if (difference) {
       difference.forEach(function(element) {
         if (element.item !== undefined){
@@ -71,37 +70,33 @@ export class AppService {
           removedSpots.push(JSON.stringify(element.item.lhs));
         }
       });
-      console.log(newSpots);
-      console.log(removedSpots);
-      fs.writeFile(oldFp, newContent, (err) => {
-        if (err) {
-            console.error('An error occurred:', err);
-        } else {
-            console.log('File has been overwritten successfully.');
-        }
-      });
+      this.updateParkingSpots(oldFp, newContent)
       this.sendEmail(`New Spots: \n ${newSpots.join(",")}\n Removed Spots: \n ${removedSpots.join(",")}`);
       console.log("sent email")
     }
-
-
-
   }
-  readNewParkingSpots(): string{
+
+  calculateDiff(oldContent: string, newContent: string): any {
+    const difference = diff(JSON.parse(oldContent), JSON.parse(newContent));
+    console.log(typeof(difference))
+    return difference
+  }
+
+  readParkingSpots(fp: string): string{
     console.log("reading file")
-    const filePath = path.join(process.cwd(), newFp);
+    const filePath = path.join(process.cwd(), fp);
     const configFile = fs.readFileSync(filePath, 'utf-8').toString();
     return configFile;
   }
-  readOldParkingSpots(): string{
-    console.log("reading file")
-    const filePath = path.join(process.cwd(), oldFp);
-    const configFile = fs.readFileSync(filePath, 'utf-8').toString();
-    return configFile;
-  }
 
-  updateParkingSpots(): void{
-
+  updateParkingSpots(oldFp: string, newContent: string): void{
+    fs.writeFile(oldFp, newContent, (err) => {
+      if (err) {
+          console.error('An error occurred:', err);
+      } else {
+          console.log('File has been overwritten successfully.');
+      }
+    });
   }
 
   sendEmail(content): void {

@@ -7,7 +7,8 @@ export class AppController {
 
   @Get()
   getSite(): string {
-    return this.appService.getSite();
+    //return this.appService.getSite();
+    return this.appService.emailParkingSpots();
   }
 
   @Post()

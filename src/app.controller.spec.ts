@@ -16,7 +16,7 @@ describe('AppController', () => {
 
   describe('root', () => {
     it('Parking scraper app!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+      expect(appController.emailParkingSpots()).toBe('Parking scraper app!');
     });
   });
 });
